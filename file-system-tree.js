@@ -7,7 +7,7 @@ module.exports = class FSTree {
     }
 
     /**
-     * get all the nodes in this tree as an array
+     * @return [node] all the nodes in this tree as an array
      * (depth-first)
      */
     allNodes() {
@@ -23,6 +23,14 @@ module.exports = class FSTree {
         return this.root.treeString()
     }
 
+    getDataByAbsolutePath(path) {
+        return this.getNodeByAbsolutePath(path).getData()
+    }
+
+    /**
+     * It still could be useful for the client to see the FSTNode objects if they want to
+     * direct manipulation of the tree. Or should that be a nono?
+     */
     getNodeByAbsolutePath(path) {
         return path.split("/") // get array of path components
             .filter(s => s != "") // remove the root and any trailing slash
@@ -43,7 +51,7 @@ module.exports = class FSTree {
         return node != null
     }
 
-    private static createNodeArgsInvalid(parentDir, path) {
+    createNodeArgsInvalid(parentDir, path) {
         const parentDirIsNotAbsolute = parentDir == undefined || parentDir.charAt(0) !== "/"
         const pathIsNotAbsolute = path.charAt(0) != "/"
         return pathIsNotAbsolute || parentDirIsNotAbsolute

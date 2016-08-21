@@ -1,4 +1,5 @@
 module.exports = class FSTNode {
+
     constructor(pathPiece, data) {
         this.children = []
         this.parent = null
@@ -10,6 +11,10 @@ module.exports = class FSTNode {
          if (data != null) Object.keys(data).forEach(key =>
             this.data.set(key, data[key])
         )
+    }
+
+    getData() {
+        return this.data // this implementation could change
     }
 
     getPathComponent() {
