@@ -1,9 +1,9 @@
-const node = require('./node')
+const FSTNode = require('./tree-node')
 const pathObj = require('./pathObj')
 
-module.exports = class tree {
+module.exports = class FSTree {
     constructor() {
-        this.root = new node("")
+        this.root = new FSTNode("")
     }
 
     /**
@@ -32,7 +32,7 @@ module.exports = class tree {
             )
     }
 
-    /** returns the parent node*/
+    /** returns the parent FSTNode*/
     addNode(node, parentPath) {
         if (parentPath == null || parentPath == "") return this.root.addChild(node)
         const parent = this.getNodeByAbsolutePath(parentPath)
@@ -51,7 +51,7 @@ module.exports = class tree {
         }
     }
 
-    /** move node "component" from "oldDir" to "newDir" */
+    /** move FSTNode "component" from "oldDir" to "newDir" */
     moveNode(component, oldDir, newDir) {
         const oldParent = this.getNodeByAbsolutePath(oldDir)
         const node = oldParent.getChild(component)

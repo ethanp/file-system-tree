@@ -1,4 +1,4 @@
-module.exports = class node {
+module.exports = class FSTNode {
     constructor(pathPiece) {
         this.children = []
         this.parent = null
@@ -36,7 +36,7 @@ module.exports = class node {
         return this
     }
 
-    /** returns true if a node was removed */
+    /** returns true if a FSTNode was removed */
     removeChild(pathPiece) {
         const oldNumChildren = this.numChildren()
         this.children = this.children.filter(c => c.getPathComponent() != pathPiece)
@@ -55,7 +55,7 @@ module.exports = class node {
         return this.children.find(c => c.getPathComponent() == pathPiece)
     }
 
-    /** create a simple string visualization of this node and its descendents */
+    /** create a simple string visualization of this FSTNode and its descendents */
     treeString() {
         return this.children.reduce(
             (prev, cur) => prev.concat(
@@ -65,7 +65,7 @@ module.exports = class node {
     }
 
     /**
-     * get an array that starts with this node, and contains all its descendents
+     * get an array that starts with this FSTNode, and contains all its descendents
      * (pre-order, depth-first)
      */
     getSubtree() {
