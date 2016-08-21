@@ -1,0 +1,26 @@
+{
+  "name": "file-system-tree",
+  "version": "0.1.0",
+  "description": "a tree class organized like the filesystem",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ethanp/file-system-tree.git"
+  },
+  "keywords": [
+    "file-system",
+    "tree"
+  ],
+  "author": "Ethan Petuchowski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ethanp/file-system-tree/issues"
+  },
+  "homepage": "https://github.com/ethanp/file-system-tree",
+  "dependencies": {
+    "kefir": "^3.4.0"
+  }
+}
