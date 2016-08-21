@@ -1,5 +1,5 @@
 const FSTNode = require('./tree-node')
-const pathObj = require('./pathObj')
+const pathObj = require('./abs-path')
 
 module.exports = class FSTree {
     constructor() {

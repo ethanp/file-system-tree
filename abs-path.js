@@ -1,4 +1,4 @@
-class pathObj {
+class AbsPath {
     constructor(str) {
         this.value = str
     }
