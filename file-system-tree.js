@@ -32,6 +32,23 @@ module.exports = class FSTree {
             )
     }
 
+    /** absolute path to parentDir is required if the given path is not absolute */
+    createNodeAtPath(path, data, parentDir) {
+        if (FSTree.createNodeArgsInvalid(parentDir, path)) {
+            console.error(`invalid arguments ${path}, ${data}, ${parentDir} to Tree.createNodeAtPath`)
+            return null
+        }
+        if (path.charAt(0) !== "/") path = parentDir + path
+        const node = new FSTNode(this.root.getNodeAtRelativePath(path.substring(1)), data)
+        return node != null
+    }
+
+    private static createNodeArgsInvalid(parentDir, path) {
+        const parentDirIsNotAbsolute = parentDir == undefined || parentDir.charAt(0) !== "/"
+        const pathIsNotAbsolute = path.charAt(0) != "/"
+        return pathIsNotAbsolute || parentDirIsNotAbsolute
+    }
+
     /** returns the parent FSTNode*/
     addNode(node, parentPath) {
         if (parentPath == null || parentPath == "") return this.root.addChild(node)

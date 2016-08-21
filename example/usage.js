@@ -3,6 +3,6 @@ const FSTNode = require("../tree-node")
 const tree = new FSTree()
 
 // TODO this method does not exist
-tree.addNode("/somewhere/over/the/rainbow")
+tree.createNodeAtPath("/somewhere/over/the/rainbow", {text: "hello"})
 
-const node: FSTNode = tree.getNodeByAbsolutePath("/somewhere/over/the/rainbow")
+const node = tree.getNodeByAbsolutePath("/somewhere/over/the/rainbow")

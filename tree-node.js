@@ -1,10 +1,15 @@
 module.exports = class FSTNode {
-    constructor(pathPiece) {
+    constructor(pathPiece, data) {
         this.children = []
         this.parent = null
         this.uid = Symbol()
         this.pathComponent = pathPiece
         this.data = new Map()
+
+        // add data object parameter to the internal data `Map`
+         if (data != null) Object.keys(data).forEach(key =>
+            this.data.set(key, data[key])
+        )
     }
 
     getPathComponent() {
@@ -17,6 +22,11 @@ module.exports = class FSTNode {
 
     findByID(id) {
         return this.uid == id ? this : this.children.find(c => c.findByID(id));
+    }
+
+    getNodeAtRelativePath(path) {
+        // TODO implement
+        throw new NotImplementedException()
     }
 
     getAbsolutePath() {

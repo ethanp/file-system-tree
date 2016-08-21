@@ -1,6 +1,6 @@
 class AbsPath {
-    constructor(str) {
-        this.value = str
+    constructor(absolutePath) {
+        this.value = absolutePath
     }
 
     parent() {
