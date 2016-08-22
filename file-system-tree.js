@@ -21,8 +21,8 @@ module.exports = class FSTree {
         return this.root
     }
 
-    getNodeByID(id) {
-        return this.root.findByID(id)
+    getNodeById(id) {
+        return this.root.findById(id)
     }
 
     /** returns a simple string visualization of the entire tree */
