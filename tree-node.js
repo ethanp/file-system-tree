@@ -8,7 +8,7 @@ module.exports = class FSTNode {
         this.data = new Map()
 
         // add data object parameter to the internal data `Map`
-         if (data != null) Object.keys(data).forEach(key =>
+        if (data != null) Object.keys(data).forEach(key =>
             this.data.set(key, data[key])
         )
     }
@@ -40,6 +40,33 @@ module.exports = class FSTNode {
             : this.parent.getAbsolutePath() + "/" + this.pathComponent;
     }
 
+    indexOfChild(childId) {
+        return this.children.findIndex(c => c.findById(childId))
+    }
+
+    previousSiblingOfChild(childId) {
+        const index = this.indexOfChild(childId)
+        // if index is 0, or doesn't exist, we return this (parent) node
+        return index <= 0 ? this : this.children[index - 1]
+    }
+
+    previousSibling() {
+        return this.previousSiblingOfChild(this.uid)
+    }
+
+    nextSibling() {
+        return this.nextSiblingOfChild(this.uid)
+    }
+
+    nextSiblingOfChild(childId) {
+        const index = this.indexOfChild(childId)
+        if (index + 1 < this.children.length) {
+            return this.children[index + 1]
+        } else {
+            // TODO
+        }
+    }
+
     addChild(child) {
         this.children.push(child)
         child.setParent(this)
@@ -68,6 +95,10 @@ module.exports = class FSTNode {
 
     getChildById(childId) {
         return this.children.find(c => c.getSymbol() == childId)
+    }
+
+    getChildIndexById(childId) {
+        return this.children.findIndex(c => c.getSymbol() == childId)
     }
 
     getSymbol() {

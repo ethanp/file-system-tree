@@ -27,6 +27,17 @@ module.exports = class TreeCursor {
         return this
     }
 
+    /** if this is the first sibling, this command will 'pop' up a directory */
+    moveCursorUp() {
+        this.currentNode = this.currentNode.previousSibling()
+        return this
+    }
+
+    moveCursorDown() {
+        this.currentNode = this.currentNode.nextSibling()
+        return this
+    }
+
     moveCursorToId(nodeId) {
         this.currentNode = this.tree.getNodeById(nodeId)
         return this

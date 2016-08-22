@@ -49,7 +49,7 @@ module.exports = class FSTree {
 
     /** absolute path to parentDir is required if the given path is not absolute */
     createNodeAtPath(path, data, parentDir) {
-        if (FSTree.createNodeArgsInvalid(parentDir, path)) {
+        if (this.createNodeArgsInvalid(parentDir, path)) {
             console.error(`invalid arguments ${path}, ${data}, ${parentDir} to Tree.createNodeAtPath`)
             return null
         }
@@ -58,6 +58,7 @@ module.exports = class FSTree {
         return node != null
     }
 
+    //noinspection JSMethodCanBeStatic (mocha crashes if I make it static)
     createNodeArgsInvalid(parentDir, path) {
         const parentDirIsNotAbsolute = parentDir == undefined || parentDir.charAt(0) !== "/"
         const pathIsNotAbsolute = path.charAt(0) != "/"
