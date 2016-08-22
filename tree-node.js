@@ -59,12 +59,10 @@ module.exports = class FSTNode {
     }
 
     nextSiblingOfChild(childId) {
-        const index = this.indexOfChild(childId)
-        if (index + 1 < this.children.length) {
-            return this.children[index + 1]
-        } else {
-            // TODO
-        }
+        const nextIndex = this.indexOfChild(childId) + 1
+        return nextIndex < this.children.length
+            ? this.children[nextIndex]
+            : this.parent.nextSiblingOfChild(this.uid)
     }
 
     addChild(child) {

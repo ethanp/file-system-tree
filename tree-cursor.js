@@ -33,6 +33,7 @@ module.exports = class TreeCursor {
         return this
     }
 
+    /** if this is the first sibling, this command will 'pop' to the "next" directory */
     moveCursorDown() {
         this.currentNode = this.currentNode.nextSibling()
         return this

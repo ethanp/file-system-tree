@@ -16,11 +16,3 @@ describe("a file system tree", () => {
     it("spec name", () => {})
 })
 
-describe("a file system FSTNode", () => {
-    it("something", () => {})
-    it("something", () => {})
-    it("something", () => {})
-    it("something", () => {})
-    it("something", () => {})
-    it("something", () => {})
-})
