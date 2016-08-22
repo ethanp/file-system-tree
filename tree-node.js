@@ -46,6 +46,10 @@ module.exports = class FSTNode {
         return this
     }
 
+    getParent() {
+        return this.parent
+    }
+
     setParent(node) {
         this.parent = node
         return this
@@ -62,10 +66,18 @@ module.exports = class FSTNode {
         return this.children.length
     }
 
+    getChildById(childId) {
+        return this.children.find(c => c.getSymbol() == childId)
+    }
+
+    getSymbol() {
+        return this.uid
+    }
+
     /** returns undefined if the child doesn't exist */
-    getChild(pathPiece) {
+    getChildByName(pathPiece) {
         if (pathPiece.split("/") > 1) {
-            alert("unforeseen usecase: complex path pieces in getChild are not supported")
+            alert("unforeseen usecase: complex path pieces in getChildByName are not supported")
         }
         return this.children.find(c => c.getPathComponent() == pathPiece)
     }

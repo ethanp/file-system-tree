@@ -3,6 +3,10 @@ class AbsPath {
         this.value = absolutePath
     }
 
+    append(pathPiece) {
+        this.value += `/${pathPiece}`
+    }
+
     parent() {
         return this.value.substring(0, this.value.lastIndexOf("/"))
     }

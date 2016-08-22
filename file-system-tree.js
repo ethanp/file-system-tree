@@ -1,6 +1,9 @@
 const FSTNode = require('./tree-node')
 const pathObj = require('./abs-path')
 
+// TODO symlinks
+// TODO search
+
 module.exports = class FSTree {
     constructor() {
         this.root = new FSTNode("")
@@ -12,6 +15,10 @@ module.exports = class FSTree {
      */
     allNodes() {
         return this.root.getSubtree()
+    }
+
+    getRoot() {
+        return this.root
     }
 
     getNodeByID(id) {
@@ -35,7 +42,7 @@ module.exports = class FSTree {
         return path.split("/") // get array of path components
             .filter(s => s != "") // remove the root and any trailing slash
             .reduce( // travel down tree
-                (cur, next) => cur == null ? null : cur.getChild(next),
+                (cur, next) => cur == null ? null : cur.getChildByName(next),
                 this.root
             )
     }
@@ -79,7 +86,7 @@ module.exports = class FSTree {
     /** move FSTNode "component" from "oldDir" to "newDir" */
     moveNode(component, oldDir, newDir) {
         const oldParent = this.getNodeByAbsolutePath(oldDir)
-        const node = oldParent.getChild(component)
+        const node = oldParent.getChildByName(component)
         oldParent.removeChild(component)
         const newParent = this.getNodeByAbsolutePath(newDir)
         newParent.addChild(node)
