@@ -1,6 +1,8 @@
 /**
  * Manages user's cursor location in the file-system tree.
  * A.k.a. manages the user's "working directory".
+ *
+ * Methods that don't return `this` are prefixed with "get"
  */
 module.exports = class TreeCursor {
     /** each cursor is tied to a particular user */
@@ -12,7 +14,7 @@ module.exports = class TreeCursor {
     }
 
     // in/out of a directory, cd
-    moveCursorLeft() {
+    moveLeft() {
         this.currentNode = this.currentNode.getParent()
         return this
     }
@@ -26,42 +28,37 @@ module.exports = class TreeCursor {
 
     /** if this is the first sibling, this command will 'pop' up a directory */
     moveUp() {
-        this.currentNode = this.currentNode.previousSibling()
+        this.currentNode = this.currentNode.getPreviousSibling()
         return this
     }
 
     /** if this is the first sibling, this command will 'pop' to the "next" directory */
     moveDown() {
-        this.currentNode = this.currentNode.nextSibling()
+        this.currentNode = this.currentNode.getNextSibling()
         return this
     }
 
-    moveToChildById(childId) {
-        this.currentNode = this.currentNode.getChildById(childId)
+    moveToChildByName(childName) {
+        this.currentNode = this.currentNode.getChildByName(childName)
         return this
     }
 
-    moveToChildByPath(childPath) {
-        this.currentNode = this.currentNode.getChildByName(childPath)
-        return this
-    }
-
-    moveCursorToId(nodeId) {
+    moveToId(nodeId) {
         this.currentNode = this.tree.getNodeById(nodeId)
         return this
     }
 
-    moveCursorToPath(absolutePath) {
+    moveToPath(absolutePath) {
         this.currentNode = this.tree.getNodeByAbsolutePath(absolutePath)
         return this
     }
 
     /** pwd */
-    getCurrentAbsolutePath() {
+    getAbsPath() {
         return this.currentNode.getAbsolutePath()
     }
 
-    getCurrentNode() {
+    getNode() {
         return this.currentNode
     }
 
@@ -71,14 +68,22 @@ module.exports = class TreeCursor {
         return this
     }
 
-    /** returns the created node's symbol */
     createChild(name, data, symbol) {
         this.currentNode.createChild(name, data, symbol)
         return this
     }
 
-    /** this is for testing */
-    getRepr() {
-        return this.currentNode.getSymbol()
+    /** returns the id of the current node */
+    getId() {
+        return this.currentNode.getId()
+    }
+
+    /** returns an array of nodes */
+    getFullTreeAsArray() {
+        return this.tree.allNodes()
+    }
+
+    getAllPaths() {
+        return this.getFullTreeAsArray().map(node => node.getAbsolutePath())
     }
 }

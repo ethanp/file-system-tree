@@ -52,11 +52,11 @@ module.exports = class FSTNode {
         return index <= 0 ? this : this.children[index - 1]
     }
 
-    previousSibling() {
+    getPreviousSibling() {
         return this.parent.previousSiblingOfChild(this.uid)
     }
 
-    nextSibling() {
+    getNextSibling() {
         return this.nextSiblingOfChild(this.uid)
     }
 
@@ -98,20 +98,8 @@ module.exports = class FSTNode {
         return this.children.length
     }
 
-    getChildById(childId) {
-        return this.children.find(c => c.getSymbol() == childId)
-    }
-
-    getChildIndexById(childId) {
-        return this.children.findIndex(c => c.getSymbol() == childId)
-    }
-
     getId() {
         return this.uid
-    }
-
-    getSymbol() {
-        return this.getId()
     }
 
     /** returns undefined if the child doesn't exist */

@@ -1,5 +1,5 @@
 const FSTNode = require('./tree-node')
-const pathObj = require('./abs-path')
+const AbsPath = require('./abs-path')
 
 // TODO symlinks
 // TODO search
@@ -76,7 +76,7 @@ module.exports = class FSTree {
     }
 
     deleteNode(path) {
-        const pathObj = new pathObj(path)
+        const pathObj = new AbsPath(path)
         const parentNode = this.getNodeByAbsolutePath(pathObj.parent())
         return {
             success: parentNode == null ? null : parentNode.removeChild(pathObj.basename()),

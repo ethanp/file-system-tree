@@ -1,5 +1,4 @@
 const FSTree = require('../file-system-tree')
-const FSTNode = require('../tree-node')
 const TreeCursor = require('../tree-cursor')
 const assert = require('assert')
 
@@ -29,79 +28,106 @@ describe("a cursor", () => {
         const name = p_name || FIRST_CHILD_NAME
         const data = { data: "DATA" }
         const symbol = Symbol()
-        const ret = _cursor.createChild(name, data, symbol)
-        assert.equal(ret.getRepr(), _cursor.getRepr())
+        _cursor.createChild(name, data, symbol)
+        _cursor.moveToChildByName(name)
+        assert.equal(symbol, _cursor.getId())
+        _cursor.moveLeft()
         return symbol
     }
 
     it("should start out at root", () => {
         const tree = new FSTree()
         const cursor = createBasicCursor(tree)
-        return assert.equal(cursor.getCurrentNode(), tree.getRoot())
+        return assert.equal(cursor.getNode(), tree.getRoot())
     })
     it("should let you make a child", () => {
         addChild()
-        return assert.equal(basicCursor.getCurrentNode().numChildren(), 1)
+        return assert.equal(basicCursor.getNode().numChildren(), 1)
     })
     it("should go 'down' into that child", () => {
         addChild()
         returnsThis(basicCursor.moveDown())
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should go 'up' back into the root", () => {
         addChild()
-        returnsThis(basicCursor.moveDown())
+        basicCursor.moveDown()
         returnsThis(basicCursor.moveUp())
-        return assert.equal(basicCursor.getCurrentNode().isRoot(), true)
+        return assert.equal(basicCursor.getNode().isRoot(), true)
     })
     it("should go to child by child name", () => {
         addChild()
-        returnsThis(basicCursor.moveToChildByPath(FIRST_CHILD_NAME))
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        returnsThis(basicCursor.moveToChildByName(FIRST_CHILD_NAME))
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should move left", () => {
         addChild()
-        returnsThis(basicCursor.moveToChildByPath(FIRST_CHILD_NAME))
-        returnsThis(basicCursor.moveCursorLeft())
-        return assert.equal(basicCursor.getCurrentNode().isRoot(), true)
-    })
-    it("should go to child by id", () => {
-        const id = addChild()
-        returnsThis(basicCursor.moveToChildById(id))
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        basicCursor.moveToChildByName(FIRST_CHILD_NAME)
+        returnsThis(basicCursor.moveLeft())
+        return assert.equal(basicCursor.getNode().isRoot(), true)
     })
     it("should go to first child on 'right'", () => {
         addChild()
         returnsThis(basicCursor.moveRight())
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should go to any node by id", () => {
         const id = addChild()
-        returnsThis(basicCursor.moveCursorToId(id))
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        returnsThis(basicCursor.moveToId(id))
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should go to any node by absolute path", () => {
         addChild()
-        returnsThis(basicCursor.moveCursorToPath(`/${FIRST_CHILD_NAME}`))
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        returnsThis(basicCursor.moveToPath(`/${FIRST_CHILD_NAME}`))
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should be able to print its current absolute path", () => {
         addChild()
-        assert.equal(basicCursor.getCurrentAbsolutePath(), "/")
-        returnsThis(basicCursor.moveCursorToPath(`/${FIRST_CHILD_NAME}`))
-        assert.equal(basicCursor.getCurrentAbsolutePath(), `/${FIRST_CHILD_NAME}`)
-        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+        assert.equal(basicCursor.getAbsPath(), "/")
+        basicCursor.moveToPath(`/${FIRST_CHILD_NAME}`)
+        assert.equal(basicCursor.getAbsPath(), `/${FIRST_CHILD_NAME}`)
+        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
     it("should be able to jump to and print its current absolute path in a lower child", () => {
-        assert.equal(basicCursor.getCurrentAbsolutePath(), "/")
+        assert.equal(basicCursor.getAbsPath(), "/")
         const nestedChildName = "humor."
         addChild()
-        returnsThis(basicCursor.moveRight())
-        assert.equal(basicCursor.getCurrentAbsolutePath(), `/${FIRST_CHILD_NAME}`)
+        basicCursor.moveRight()
+        assert.equal(basicCursor.getAbsPath(), `/${FIRST_CHILD_NAME}`)
         addChild(nestedChildName)
         const nestedPath = `/${FIRST_CHILD_NAME}/${nestedChildName}`
-        returnsThis(basicCursor.moveCursorToPath(nestedPath))
-        assert.equal(basicCursor.getCurrentAbsolutePath(), nestedPath)
-        return assert.equal(basicCursor.getCurrentNode().getName(), nestedChildName)
+        returnsThis(basicCursor.moveToPath(nestedPath))
+        assert.equal(basicCursor.getAbsPath(), nestedPath)
+    })
+    it("should be able to reset to root", () => {
+        const nestedChildName = "humor."
+        addChild()
+        basicCursor.moveRight()
+        addChild(nestedChildName)
+        const nestedPath = `/${FIRST_CHILD_NAME}/${nestedChildName}`
+        basicCursor.moveToPath(nestedPath)
+        assert.equal(basicCursor.getAbsPath(), nestedPath)
+        returnsThis(basicCursor.resetToRoot())
+        return assert.equal(basicCursor.getAbsPath(), "/")
+    })
+    it("should be able to list all nodes", () => {
+        const p = "p"
+        const p2 = "p2"
+        addChild()
+        basicCursor.moveRight()
+        addChild(p)
+        addChild(p2)
+        basicCursor.moveToChildByName(p2)
+        addChild(p)
+        const treeNodePaths = new Set(basicCursor.getAllPaths())
+        const expectedAbsolutePaths = [
+            "/",
+            `/${FIRST_CHILD_NAME}`,
+            `/${FIRST_CHILD_NAME}/${p}`,
+            `/${FIRST_CHILD_NAME}/${p2}`,
+            `/${FIRST_CHILD_NAME}/${p2}/${p}`,
+        ]
+        expectedAbsolutePaths.forEach(path => assert.equal(treeNodePaths.delete(path), true, path))
+        return assert.equal(treeNodePaths.size, 0)
     })
 })
