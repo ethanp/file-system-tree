@@ -18,31 +18,31 @@ module.exports = class TreeCursor {
     }
 
     /** move into first child */
-    moveCursorRight() {
+    moveRight() {
         const firstChild = this.currentNode.firstChild()
         if (firstChild != undefined) this.currentNode = firstChild
         return this
     }
 
-    moveCursorIntoChildById(childId) {
-        this.currentNode = this.currentNode.getChildById(childId)
-        return this
-    }
-
-    moveCursorIntoChildByPath(childPath) {
-        this.currentNode = this.currentNode.getChildByName(childPath)
-        return this
-    }
-
     /** if this is the first sibling, this command will 'pop' up a directory */
-    moveCursorUp() {
+    moveUp() {
         this.currentNode = this.currentNode.previousSibling()
         return this
     }
 
     /** if this is the first sibling, this command will 'pop' to the "next" directory */
-    moveCursorDown() {
+    moveDown() {
         this.currentNode = this.currentNode.nextSibling()
+        return this
+    }
+
+    moveToChildById(childId) {
+        this.currentNode = this.currentNode.getChildById(childId)
+        return this
+    }
+
+    moveToChildByPath(childPath) {
+        this.currentNode = this.currentNode.getChildByName(childPath)
         return this
     }
 
@@ -62,7 +62,6 @@ module.exports = class TreeCursor {
     }
 
     getCurrentNode() {
-        // TODO copy it?
         return this.currentNode
     }
 

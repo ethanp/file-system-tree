@@ -45,29 +45,34 @@ describe("a cursor", () => {
     })
     it("should go 'down' into that child", () => {
         addChild()
-        returnsThis(basicCursor.moveCursorDown())
+        returnsThis(basicCursor.moveDown())
         return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
     })
     it("should go 'up' back into the root", () => {
         addChild()
-        returnsThis(basicCursor.moveCursorDown())
-        returnsThis(basicCursor.moveCursorUp())
+        returnsThis(basicCursor.moveDown())
+        returnsThis(basicCursor.moveUp())
         return assert.equal(basicCursor.getCurrentNode().isRoot(), true)
     })
     it("should go to child by child name", () => {
         addChild()
-        returnsThis(basicCursor.moveCursorIntoChildByPath(FIRST_CHILD_NAME))
+        returnsThis(basicCursor.moveToChildByPath(FIRST_CHILD_NAME))
         return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
     })
     it("should move left", () => {
         addChild()
-        returnsThis(basicCursor.moveCursorIntoChildByPath(FIRST_CHILD_NAME))
+        returnsThis(basicCursor.moveToChildByPath(FIRST_CHILD_NAME))
         returnsThis(basicCursor.moveCursorLeft())
         return assert.equal(basicCursor.getCurrentNode().isRoot(), true)
     })
     it("should go to child by id", () => {
         const id = addChild()
-        returnsThis(basicCursor.moveCursorIntoChildById(id))
+        returnsThis(basicCursor.moveToChildById(id))
+        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+    })
+    it("should go to first child on 'right'", () => {
+        addChild()
+        returnsThis(basicCursor.moveRight())
         return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
     })
     it("should go to any node by id", () => {
@@ -77,7 +82,26 @@ describe("a cursor", () => {
     })
     it("should go to any node by absolute path", () => {
         addChild()
-        basicCursor.moveCursorToPath(`/${FIRST_CHILD_NAME}`)
+        returnsThis(basicCursor.moveCursorToPath(`/${FIRST_CHILD_NAME}`))
         return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+    })
+    it("should be able to print its current absolute path", () => {
+        addChild()
+        assert.equal(basicCursor.getCurrentAbsolutePath(), "/")
+        returnsThis(basicCursor.moveCursorToPath(`/${FIRST_CHILD_NAME}`))
+        assert.equal(basicCursor.getCurrentAbsolutePath(), `/${FIRST_CHILD_NAME}`)
+        return assert.equal(basicCursor.getCurrentNode().getName(), FIRST_CHILD_NAME)
+    })
+    it("should be able to jump to and print its current absolute path in a lower child", () => {
+        assert.equal(basicCursor.getCurrentAbsolutePath(), "/")
+        const nestedChildName = "humor."
+        addChild()
+        returnsThis(basicCursor.moveRight())
+        assert.equal(basicCursor.getCurrentAbsolutePath(), `/${FIRST_CHILD_NAME}`)
+        addChild(nestedChildName)
+        const nestedPath = `/${FIRST_CHILD_NAME}/${nestedChildName}`
+        returnsThis(basicCursor.moveCursorToPath(nestedPath))
+        assert.equal(basicCursor.getCurrentAbsolutePath(), nestedPath)
+        return assert.equal(basicCursor.getCurrentNode().getName(), nestedChildName)
     })
 })

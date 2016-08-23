@@ -35,9 +35,11 @@ module.exports = class FSTNode {
     }
 
     getAbsolutePath() {
-        return this.isRoot()
-            ? this.pathComponent
-            : this.parent.getAbsolutePath() + "/" + this.pathComponent;
+        return this.isRoot() ? "/" : this.innerAbsolutePath()
+    }
+
+    innerAbsolutePath() {
+        return this.isRoot() ? "" : this.parent.innerAbsolutePath() + "/" + this.pathComponent
     }
 
     indexOfChild(childId) {
