@@ -1,4 +1,3 @@
-
 /**
  * Manages user's cursor location in the file-system tree.
  * A.k.a. manages the user's "working directory".
@@ -8,6 +7,7 @@ module.exports = class TreeCursor {
     constructor(user, tree) {
         this.tree = tree
         this.user = user
+        // TODO can we make this private somehow?
         this.currentNode = tree.getRoot()
     }
 
@@ -54,9 +54,19 @@ module.exports = class TreeCursor {
         return this.currentNode.getAbsolutePath()
     }
 
+    getCurrentNode() {
+        // TODO copy it?
+        return this.currentNode
+    }
+
     // 'RESET_THISUSER_CURSOR' (cd ~)
     resetToRoot() {
         this.currentNode = this.tree.getRoot()
         return this
+    }
+
+    /** returns the created node's symbol */
+    createChild(name, data, symbol) {
+        this.currentNode.createChild(name, data, symbol)
     }
 }

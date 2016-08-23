@@ -1,9 +1,9 @@
 module.exports = class FSTNode {
 
-    constructor(pathPiece, data) {
+    constructor(pathPiece, data, symbol) {
         this.children = []
         this.parent = null
-        this.uid = Symbol()
+        this.uid = symbol || Symbol()
         this.pathComponent = pathPiece
         this.data = new Map()
 
@@ -17,7 +17,7 @@ module.exports = class FSTNode {
         return this.data // this implementation could change
     }
 
-    getPathComponent() {
+    getName() {
         return this.pathComponent
     }
 
@@ -51,7 +51,7 @@ module.exports = class FSTNode {
     }
 
     previousSibling() {
-        return this.previousSiblingOfChild(this.uid)
+        return this.parent.previousSiblingOfChild(this.uid)
     }
 
     nextSibling() {
@@ -63,6 +63,11 @@ module.exports = class FSTNode {
         return nextIndex < this.children.length
             ? this.children[nextIndex]
             : this.parent.nextSiblingOfChild(this.uid)
+    }
+
+    createChild(name, data, symbol) {
+        const child = new FSTNode(name, data, symbol)
+        return this.addChild(child)
     }
 
     addChild(child) {
@@ -83,7 +88,7 @@ module.exports = class FSTNode {
     /** returns true if a FSTNode was removed */
     removeChild(pathPiece) {
         const oldNumChildren = this.numChildren()
-        this.children = this.children.filter(c => c.getPathComponent() != pathPiece)
+        this.children = this.children.filter(c => c.getName() != pathPiece)
         return this.numChildren() < oldNumChildren
     }
 
@@ -108,7 +113,7 @@ module.exports = class FSTNode {
         if (pathPiece.split("/") > 1) {
             alert("unforeseen usecase: complex path pieces in getChildByName are not supported")
         }
-        return this.children.find(c => c.getPathComponent() == pathPiece)
+        return this.children.find(c => c.getName() == pathPiece)
     }
 
     /** create a simple string visualization of this FSTNode and its descendents */
