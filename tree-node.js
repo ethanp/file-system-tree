@@ -104,8 +104,12 @@ module.exports = class FSTNode {
         return this.children.findIndex(c => c.getSymbol() == childId)
     }
 
-    getSymbol() {
+    getId() {
         return this.uid
+    }
+
+    getSymbol() {
+        return this.getId()
     }
 
     /** returns undefined if the child doesn't exist */

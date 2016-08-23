@@ -68,5 +68,11 @@ module.exports = class TreeCursor {
     /** returns the created node's symbol */
     createChild(name, data, symbol) {
         this.currentNode.createChild(name, data, symbol)
+        return this
+    }
+
+    /** this is for testing */
+    getRepr() {
+        return this.currentNode.getSymbol()
     }
 }
