@@ -17,6 +17,13 @@ module.exports = class TreeCursor {
         return this
     }
 
+    /** move into first child */
+    moveCursorRight() {
+        const firstChild = this.currentNode.firstChild()
+        if (firstChild != undefined) this.currentNode = firstChild
+        return this
+    }
+
     moveCursorIntoChildById(childId) {
         this.currentNode = this.currentNode.getChildById(childId)
         return this

@@ -120,6 +120,11 @@ module.exports = class FSTNode {
         return this.children.find(c => c.getName() == pathPiece)
     }
 
+    /** returns undefined if there is no first child */
+    firstChild() {
+        return this.children[0]
+    }
+
     /** create a simple string visualization of this FSTNode and its descendents */
     treeString() {
         return this.children.reduce(
