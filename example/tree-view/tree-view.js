@@ -7,7 +7,6 @@ class Gui {
 
     /** clear and re-build the tree from scratch */
     render() {
-        $("body").empty()
         this.renderTree()
         this.registerNavigationHandlers()
     }
@@ -34,7 +33,8 @@ class Gui {
             DOWN: 40
         }
         const node = this.cursor.getNode()
-        $("body").keyup((evt) => {
+        // clear old keypress handlers before adding new keypress handlers
+        $("body").off("keyup").keyup((evt) => {
             switch (evt.which) {
                 case ArrowKey.RIGHT:
                     console.log("navigating right")
@@ -67,7 +67,7 @@ class Gui {
 
     createFormElem() {
         const $form = $("<form>First name</form>")
-        const $input = $("<input type='text' name='lastname'>")
+        const $input = $("<input type='text' name='New Child'>")
         const $button = $("<input type='submit' value='Submit'>")
         $form.append($input)
         $form.append($button)
@@ -80,15 +80,24 @@ class Gui {
     }
 
     renderTree() {
-        $("body").append(
-            $("<ul>").append(
-                this.renderSubtree(
-                    this.tree.getRoot())))
+        $("body").empty()
+            .append(
+                $("<ul>").append(
+                    this.renderSubtree(
+                        this.tree.getRoot())))
     }
 
     renderSubtree(node) {
         // render this node as a basic list item
         const baseHtmlNode = $("<li>").text(node.getName())
+
+        // if this is the node where the cursor is at
+        if (node == this.cursor.getNode()) {
+            // give it unique styling
+            baseHtmlNode.addClass("cursor")
+            // give it a form for adding a new child
+            baseHtmlNode.append(this.createFormElem())
+        }
 
         // if this node is expanded, also render its children
         if (node.getData().get("expanded") && node.numChildren() > 0) {
@@ -97,12 +106,6 @@ class Gui {
                 .forEach(child => $ul
                     .append(this.renderSubtree(child)))
             baseHtmlNode.append($ul)
-        }
-        // if this is the node where the cursor is at
-        if (node == this.cursor.getNode()) {
-            // give it unique styling
-            baseHtmlNode.addClass("cursor")
-            baseHtmlNode.append(this.createFormElem())
         }
         // clicking on this node should move the cursor to it
         //baseHtmlNode.click(() => {
