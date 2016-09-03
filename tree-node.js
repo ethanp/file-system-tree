@@ -13,6 +13,23 @@ module.exports = class FSTNode {
         )
     }
 
+    getChildren() {
+        return this.children
+    }
+
+    getParent() {
+        return this.parent
+    }
+
+    setParent(node) {
+        this.parent = node
+        return this
+    }
+
+    getId() {
+        return this.uid
+    }
+
     getData() {
         return this.data // this implementation could change
     }
@@ -26,7 +43,7 @@ module.exports = class FSTNode {
     }
 
     findById(id) {
-        return this.uid == id ? this : this.children.find(c => c.findById(id));
+        return this.uid == id ? this : this.getChildren().find(c => c.findById(id));
     }
 
     getNodeAtRelativePath(path) {
@@ -43,13 +60,13 @@ module.exports = class FSTNode {
     }
 
     indexOfChild(childId) {
-        return this.children.findIndex(c => c.findById(childId))
+        return this.getChildren().findIndex(c => c.findById(childId))
     }
 
     previousSiblingOfChild(childId) {
         const index = this.indexOfChild(childId)
         // if index is 0, or doesn't exist, we return this (parent) node
-        return index <= 0 ? this : this.children[index - 1]
+        return index <= 0 ? this : this.getChildren()[index - 1]
     }
 
     getPreviousSibling() {
@@ -62,8 +79,8 @@ module.exports = class FSTNode {
 
     nextSiblingOfChild(childId) {
         const nextIndex = this.indexOfChild(childId) + 1
-        return nextIndex < this.children.length
-            ? this.children[nextIndex]
+        return nextIndex < this.numChildren()
+            ? this.getChildren()[nextIndex]
             : this.parent.nextSiblingOfChild(this.uid)
     }
 
@@ -78,15 +95,6 @@ module.exports = class FSTNode {
         return this
     }
 
-    getParent() {
-        return this.parent
-    }
-
-    setParent(node) {
-        this.parent = node
-        return this
-    }
-
     /** returns true if a FSTNode was removed */
     removeChild(pathPiece) {
         const oldNumChildren = this.numChildren()
@@ -95,11 +103,7 @@ module.exports = class FSTNode {
     }
 
     numChildren() {
-        return this.children.length
-    }
-
-    getId() {
-        return this.uid
+        return this.getChildren().length
     }
 
     /** returns undefined if the child doesn't exist */
@@ -107,7 +111,7 @@ module.exports = class FSTNode {
         if (pathPiece.split("/") > 1) {
             alert("unforeseen usecase: complex path pieces in getChildByName are not supported")
         }
-        return this.children.find(c => c.getName() == pathPiece)
+        return this.getChildren().find(c => c.getName() == pathPiece)
     }
 
     /** returns undefined if there is no first child */
@@ -117,7 +121,7 @@ module.exports = class FSTNode {
 
     /** create a simple string visualization of this FSTNode and its descendents */
     treeString() {
-        return this.children.reduce(
+        return this.getChildren().reduce(
             (prev, cur) => prev.concat(
                 cur.treeString().map(l => "\t" + l)),
             [this.pathComponent]
@@ -129,7 +133,7 @@ module.exports = class FSTNode {
      * (pre-order, depth-first)
      */
     getSubtree() {
-        return this.children.reduce(
+        return this.getChildren().reduce(
             (prev, cur) => prev.concat(cur.getSubtree()), [this]
         )
     }

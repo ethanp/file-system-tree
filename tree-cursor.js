@@ -15,7 +15,7 @@ module.exports = class TreeCursor {
 
     // in/out of a directory, cd
     moveLeft() {
-        this.currentNode = this.currentNode.getParent()
+        if (!this.currentNode.isRoot()) this.currentNode = this.currentNode.getParent()
         return this
     }
 
@@ -68,7 +68,10 @@ module.exports = class TreeCursor {
         return this
     }
 
+    /** both `data` and `symbol` are optional */
     createChild(name, data, symbol) {
+        data = data || {}
+        symbol = symbol || Symbol()
         this.currentNode.createChild(name, data, symbol)
         return this
     }
