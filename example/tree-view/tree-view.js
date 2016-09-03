@@ -5,7 +5,9 @@ class Gui {
         this.cursor = new TreeCursor("I am a user", this.tree)
     }
 
+    /** clear and re-build the tree from scratch */
     render() {
+        $("body").empty()
         this.renderTree()
     }
 
@@ -15,11 +17,17 @@ class Gui {
     }
 
     createFormElem() {
-        return $("<form>").submit((evt) => {
+        const $form = $("<form>First name</form>")
+        const $input = $("<input type='text' name='lastname'>")
+        const $button = $("<input type='submit' value='Submit'>")
+        $form.append($input)
+        $form.append($button)
+        $button.click((evt) => {
             evt.preventDefault()
-            alert("submit was pressed with " + evt)
-            this.formSubmit($("form").val())
+            const inputText = $input.val()
+            this.formSubmit(inputText)
         })
+        return $form
     }
 
     renderTree() {
@@ -27,6 +35,40 @@ class Gui {
             $("<ul>").append(
                 this.renderSubtree(
                     this.tree.getRoot())))
+        // register arrow key handlers for interactive navigation
+        $("body").keyup((evt) => {
+            const ArrowKey = {
+                LEFT: 37,
+                UP: 38,
+                RIGHT: 39,
+                DOWN: 40
+            }
+            const node = this.cursor.getNode()
+            if (evt.which == ArrowKey.RIGHT) {
+                if (!node.getData().get("expanded")) {
+                    node.getData().set("expanded", true)
+                } else {
+                    this.cursor.moveRight()
+                }
+                this.render()
+            }
+            else if (evt.which == ArrowKey.LEFT) {
+                if (node.getData().get("expanded")) {
+                    node.getData().delete("expanded")
+                } else {
+                    this.cursor.moveLeft()
+                }
+                this.render()
+            }
+            else if (evt.which == ArrowKey.UP) {
+                this.cursor.moveUp()
+                this.render()
+            }
+            else if (evt.which == ArrowKey.DOWN) {
+                this.cursor.moveDown()
+                this.render()
+            }
+        })
     }
 
     renderSubtree(node) {
@@ -46,44 +88,13 @@ class Gui {
             // give it unique styling
             baseHtmlNode.addClass("cursor")
             baseHtmlNode.append(this.createFormElem())
-            // register arrow key handlers for interactive navigation
-            baseHtmlNode.keyup((evt) => {
-                const ArrowKey = {
-                    RIGHT: 39, LEFT: 37,
-                    UP: 38, DOWN: 40
-                }
-                if (evt.which == ArrowKey.RIGHT) {
-                    if (!node.getData().get("expanded")) {
-                        node.getData().set("expanded", true)
-                    } else {
-                        cursor.moveRight()
-                    }
-                    this.render()
-                }
-                else if (evt.which == ArrowKey.LEFT) {
-                    if (node.getData().get("expanded")) {
-                        node.getData().delete("expanded")
-                    } else {
-                        cursor.moveLeft()
-                    }
-                    this.render()
-                }
-                else if (evt.which == ArrowKey.UP) {
-                    cursor.moveUp()
-                    this.render()
-                }
-                else if (evt.which == ArrowKey.DOWN) {
-                    cursor.moveDown()
-                    this.render()
-                }
-            })
         }
         // clicking on this node should move the cursor to it
-        baseHtmlNode.click(() => {
-            console.log("base click")
-            this.cursor.moveToId(node.getId())
-            this.render()
-        })
+        //baseHtmlNode.click(() => {
+        //    console.log("base click")
+        //    this.cursor.moveToId(node.getId())
+        //    this.render()
+        //})
         return baseHtmlNode
     }
 }
