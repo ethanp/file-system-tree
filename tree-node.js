@@ -70,18 +70,31 @@ module.exports = class FSTNode {
     }
 
     getPreviousSibling() {
-        return this.parent.previousSiblingOfChild(this.uid)
+        return this.isRoot() ? this : this.parent.previousSiblingOfChild(this.uid)
     }
 
     getNextSibling() {
-        return this.nextSiblingOfChild(this.uid)
+        return this.isRoot() ? this : this.parent.nextSiblingOfChild(this.uid)
     }
 
+    /**
+     * given the id of a child, return the "next" child,
+     * or if that child has no "next child", return _this_ node's next sibling
+     *
+     * returns undefined if no child has the given childId
+     */
     nextSiblingOfChild(childId) {
         const nextIndex = this.indexOfChild(childId) + 1
-        return nextIndex < this.numChildren()
-            ? this.getChildren()[nextIndex]
-            : this.parent.nextSiblingOfChild(this.uid)
+        if (nextIndex === 0) {
+            /* child was not found at all */
+            return undefined
+        } else if (nextIndex < this.numChildren()) {
+            /* this is the normal case */
+            return this.getChildren()[nextIndex]
+        } else {
+            /* this was the last child, so get _this_ node's next sibling */
+            return this.isRoot() ? this : this.parent.nextSiblingOfChild(this.uid)
+        }
     }
 
     createChild(name, data, symbol) {

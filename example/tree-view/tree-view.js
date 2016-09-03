@@ -9,6 +9,55 @@ class Gui {
     render() {
         $("body").empty()
         this.renderTree()
+        this.registerNavigationHandlers()
+    }
+
+    registerNavigationHandlers() {
+        const expandOrMoveRight = (node) => {
+            if (!node.getData().get("expanded")) {
+                node.getData().set("expanded", true)
+            } else {
+                this.cursor.moveRight()
+            }
+        }
+        const unexpandOrMoveLeft = (node) => {
+            if (node.getData().get("expanded")) {
+                node.getData().delete("expanded")
+            } else {
+                this.cursor.moveLeft()
+            }
+        }
+        const ArrowKey = {
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40
+        }
+        const node = this.cursor.getNode()
+        $("body").keyup((evt) => {
+            switch (evt.which) {
+                case ArrowKey.RIGHT:
+                    console.log("navigating right")
+                    expandOrMoveRight.call(this, node)
+                    this.render()
+                    break
+                case ArrowKey.LEFT:
+                    console.log("navigating left")
+                    unexpandOrMoveLeft.call(this, node)
+                    this.render()
+                    break
+                case ArrowKey.UP:
+                    console.log("navigating up")
+                    this.cursor.moveUp()
+                    this.render()
+                    break
+                case ArrowKey.DOWN:
+                    console.log("navigating down")
+                    this.cursor.moveDown()
+                    this.render()
+                    break
+            }
+        })
     }
 
     formSubmit(textInput) {
@@ -35,40 +84,6 @@ class Gui {
             $("<ul>").append(
                 this.renderSubtree(
                     this.tree.getRoot())))
-        // register arrow key handlers for interactive navigation
-        $("body").keyup((evt) => {
-            const ArrowKey = {
-                LEFT: 37,
-                UP: 38,
-                RIGHT: 39,
-                DOWN: 40
-            }
-            const node = this.cursor.getNode()
-            if (evt.which == ArrowKey.RIGHT) {
-                if (!node.getData().get("expanded")) {
-                    node.getData().set("expanded", true)
-                } else {
-                    this.cursor.moveRight()
-                }
-                this.render()
-            }
-            else if (evt.which == ArrowKey.LEFT) {
-                if (node.getData().get("expanded")) {
-                    node.getData().delete("expanded")
-                } else {
-                    this.cursor.moveLeft()
-                }
-                this.render()
-            }
-            else if (evt.which == ArrowKey.UP) {
-                this.cursor.moveUp()
-                this.render()
-            }
-            else if (evt.which == ArrowKey.DOWN) {
-                this.cursor.moveDown()
-                this.render()
-            }
-        })
     }
 
     renderSubtree(node) {
