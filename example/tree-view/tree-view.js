@@ -80,16 +80,15 @@ class Gui {
     }
 
     renderTree() {
-        $("body").empty()
-            .append(
-                $("<ul>").append(
-                    this.renderSubtree(
-                        this.tree.getRoot())))
+        const treeList = this.renderSubtree(this.tree.getRoot())
+        const $ul = $("<ul>").append(treeList)
+        $("body").empty().append($ul)
     }
 
     renderSubtree(node) {
         // render this node as a basic list item
-        const baseHtmlNode = $("<li>").text(node.isRoot() ? "ROOT" : node.getName())
+        const nodeName = node.isRoot() ? "ROOT" : node.getName()
+        const baseHtmlNode = $("<li>").text(nodeName)
 
         // if this is the node where the cursor is at
         if (node == this.cursor.getNode()) {

@@ -71,10 +71,21 @@ describe("a cursor", () => {
         returnsThis(basicCursor.moveRight())
         return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
-    it("should go to any node by id", () => {
+    it("should go to an outer node by id", () => {
         const id = addChild()
         returnsThis(basicCursor.moveToId(id))
         return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+    })
+    it("should go to a 3rd level deep node by id", () => {
+        addChild()
+        basicCursor.moveRight()
+        addChild("level2")
+        basicCursor.moveRight()
+        const id = addChild("level3")
+        const name = basicCursor.getNode().getName()
+        console.log(name)
+        returnsThis(basicCursor.moveToId(id))
+        return assert.equal(basicCursor.getNode().getName(), "level3")
     })
     it("should go to any node by absolute path", () => {
         addChild()
