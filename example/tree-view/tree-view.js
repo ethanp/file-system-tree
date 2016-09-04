@@ -89,7 +89,7 @@ class Gui {
 
     renderSubtree(node) {
         // render this node as a basic list item
-        const baseHtmlNode = $("<li>").text(node.getName())
+        const baseHtmlNode = $("<li>").text(node.isRoot() ? "ROOT" : node.getName())
 
         // if this is the node where the cursor is at
         if (node == this.cursor.getNode()) {
@@ -97,6 +97,8 @@ class Gui {
             baseHtmlNode.addClass("cursor")
             // give it a form for adding a new child
             baseHtmlNode.append(this.createFormElem())
+        } else {
+            baseHtmlNode.removeClass("cursor")
         }
 
         // if this node is expanded, also render its children
@@ -107,12 +109,13 @@ class Gui {
                     .append(this.renderSubtree(child)))
             baseHtmlNode.append($ul)
         }
-        // clicking on this node should move the cursor to it
-        //baseHtmlNode.click(() => {
-        //    console.log("base click")
-        //    this.cursor.moveToId(node.getId())
-        //    this.render()
-        //})
+        // clicking on a node will move the cursor to it
+        const $span = $("<button>").text("[focus]").click(() => {
+            console.log("clicked to focus on item")
+            this.cursor.moveToId(node.getId())
+            this.render()
+        })
+        baseHtmlNode.append($span)
         return baseHtmlNode
     }
 }
