@@ -43,7 +43,12 @@ module.exports = class FSTNode {
     }
 
     findById(id) {
-        return this.uid == id ? this : this.getChildren().find(c => c.findById(id));
+        if (this.uid === id) return this
+        for (let i in this.getChildren()) {
+            const findById2 = this.getChildren()[i].findById(id)
+            if (findById2 != undefined) return findById2
+        }
+        return undefined
     }
 
     getNodeAtRelativePath(path) {

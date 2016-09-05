@@ -2,36 +2,36 @@ const FSTree = require('../file-system-tree')
 const TreeCursor = require('../tree-cursor')
 const assert = require('assert')
 
-const createBasicCursor = (p_tree) => {
-    const tree = p_tree || new FSTree()
-    const user = { user: "someone" }
-    const cursor = new TreeCursor(user, tree)
-    return cursor
-}
+const createBasicCursor = (p_tree) =>
+    new TreeCursor("someone", p_tree || new FSTree())
 
 describe("a cursor", () => {
+    // this is the cursor used by most of these tests
     let basicCursor = null
-
-    const returnsThis = (actionResult) => {
-        return assert.deepStrictEqual(basicCursor, actionResult)
-    }
-
     beforeEach("create a cursor", () => {
         basicCursor = createBasicCursor()
         return assert.notEqual(basicCursor, null)
     })
 
+    /** used to ensure that (most) actions on the cursor return the cursor itself */
+    const returnsThis = (actionResult) =>
+        assert.deepStrictEqual(basicCursor, actionResult)
+
     const FIRST_CHILD_NAME = "child"
 
-    const addChild = (p_name, cursor) => {
-        const _cursor = cursor || basicCursor
-        const name = p_name || FIRST_CHILD_NAME
+    /** @returns the id of the created child */
+    const addChild = (name, cursor) => {
+        name = name || FIRST_CHILD_NAME
+        cursor = cursor || basicCursor
         const data = { data: "DATA" }
         const symbol = Symbol()
-        _cursor.createChild(name, data, symbol)
-        _cursor.moveToChildByName(name)
-        assert.equal(symbol, _cursor.getId())
-        _cursor.moveLeft()
+        cursor.createChild(name, data, symbol)
+        // make sure the child was created with the right name
+        cursor.moveToChildByName(name)
+        // and the right symbol
+        assert.equal(symbol, cursor.getId())
+        // but move the cursor back out to the parent node
+        cursor.moveLeft()
         return symbol
     }
 
@@ -40,9 +40,11 @@ describe("a cursor", () => {
         const cursor = createBasicCursor(tree)
         return assert.equal(cursor.getNode(), tree.getRoot())
     })
-    it("should let you make a child", () => {
+    it("should let you make children", () => {
         addChild()
-        return assert.equal(basicCursor.getNode().numChildren(), 1)
+        assert.equal(basicCursor.getNode().numChildren(), 1)
+        addChild("2nd one")
+        return assert.equal(basicCursor.getNode().numChildren(), 2)
     })
     it("should go 'down' into that child", () => {
         addChild()
@@ -71,20 +73,28 @@ describe("a cursor", () => {
         returnsThis(basicCursor.moveRight())
         return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
     })
-    it("should go to an outer node by id", () => {
+    it("should go to outer nodes by id", () => {
         const id = addChild()
+        const id2 = addChild("2nd")
         returnsThis(basicCursor.moveToId(id))
-        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+        assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+        basicCursor.moveToId(id2)
+        assert.equal(basicCursor.getNode().getName(), "2nd")
     })
     it("should go to a 3rd level deep node by id", () => {
-        addChild()
+        const id1 = addChild()
+        const id2 = addChild("level1")
         basicCursor.moveRight()
-        addChild("level2")
+        const id3 = addChild("level2")
         basicCursor.moveRight()
-        const id = addChild("level3")
-        const name = basicCursor.getNode().getName()
-        console.log(name)
-        returnsThis(basicCursor.moveToId(id))
+        const id4 = addChild("level3")
+        basicCursor.moveToId(id1)
+        assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+        basicCursor.moveToId(id2)
+        assert.equal(basicCursor.getNode().getName(), "level1")
+        basicCursor.moveToId(id3)
+        assert.equal(basicCursor.getNode().getName(), "level2")
+        basicCursor.moveToId(id4)
         return assert.equal(basicCursor.getNode().getName(), "level3")
     })
     it("should go to any node by absolute path", () => {

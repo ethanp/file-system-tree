@@ -80,9 +80,9 @@ class Gui {
     }
 
     renderTree() {
-        const treeList = this.renderSubtree(this.tree.getRoot())
-        const $ul = $("<ul>").append(treeList)
-        $("body").empty().append($ul)
+        const treeListItems = this.renderSubtree(this.tree.getRoot())
+        const $fullNestedTreeList = $("<ul>").append(treeListItems)
+        $("body").empty().append($fullNestedTreeList)
     }
 
     renderSubtree(node) {
@@ -102,11 +102,11 @@ class Gui {
 
         // if this node is expanded, also render its children
         if (node.getData().get("expanded") && node.numChildren() > 0) {
-            const $ul = $("<ul>")
+            const $listOfChildren = $("<ul>")
             node.getChildren()
-                .forEach(child => $ul
+                .forEach(child => $listOfChildren
                     .append(this.renderSubtree(child)))
-            baseHtmlNode.append($ul)
+            baseHtmlNode.append($listOfChildren)
         }
         // clicking on a node will move the cursor to it
         const $span = $("<button>").text("[focus]").click(() => {
