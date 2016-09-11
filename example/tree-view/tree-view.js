@@ -11,53 +11,76 @@ class Gui {
         this.registerNavigationHandlers()
     }
 
+    /**
+     * handlers for the arrow keys
+     */
     registerNavigationHandlers() {
-        const expandOrMoveRight = (node) => {
-            if (!node.getData().get("expanded")) {
-                node.getData().set("expanded", true)
-            } else {
-                this.cursor.moveRight()
-            }
-        }
-        const unexpandOrMoveLeft = (node) => {
-            if (node.getData().get("expanded")) {
-                node.getData().delete("expanded")
-            } else {
-                this.cursor.moveLeft()
-            }
-        }
         const ArrowKey = {
             LEFT: 37,
             UP: 38,
             RIGHT: 39,
             DOWN: 40
         }
-        const node = this.cursor.getNode()
-        // clear old keypress handlers before adding new keypress handlers
+        // clear old keypress handlers,
+        // add new keypress handlers
         $("body").off("keyup").keyup((evt) => {
             switch (evt.which) {
                 case ArrowKey.RIGHT:
-                    console.log("navigating right")
-                    expandOrMoveRight.call(this, node)
-                    this.render()
+                    this.rightKeyPressed()
                     break
                 case ArrowKey.LEFT:
-                    console.log("navigating left")
-                    unexpandOrMoveLeft.call(this, node)
-                    this.render()
+                    this.leftKeyPressed()
                     break
                 case ArrowKey.UP:
-                    console.log("navigating up")
-                    this.cursor.moveUp()
-                    this.render()
+                    this.upKeyPressed()
                     break
                 case ArrowKey.DOWN:
-                    console.log("navigating down")
-                    this.cursor.moveDown()
-                    this.render()
+                    this.downKeyPressed()
                     break
             }
         })
+    }
+
+    downKeyPressed() {
+        console.log("navigating down")
+        this.cursor.moveDown()
+        this.render()
+    }
+
+    upKeyPressed() {
+        console.log("navigating up")
+        this.cursor.moveUp()
+        this.render()
+    }
+
+    leftKeyPressed() {
+        console.log("navigating left")
+        this.unexpandOrMoveLeft()
+        this.render()
+    }
+
+    unexpandOrMoveLeft() {
+        const data = this.cursor.getNode().getData()
+        if (data.get("expanded")) {
+            data.delete("expanded")
+        } else {
+            this.cursor.moveLeft()
+        }
+    }
+
+    expandOrMoveRight() {
+        const data = this.cursor.getNode().getData()
+        if (data.get("expanded") !== true) {
+            data.set("expanded", true)
+        } else {
+            this.cursor.moveRight()
+        }
+    }
+
+    rightKeyPressed() {
+        console.log("navigating right")
+        this.expandOrMoveRight()
+        this.render()
     }
 
     formSubmit(textInput) {
@@ -65,6 +88,10 @@ class Gui {
         this.render()
     }
 
+    /**
+     * Creates a form with a text input box and a submit button.
+     * @return {$("<form>")} the form as a jQuery object
+     */
     createFormElem() {
         const $form = $("<form>First name</form>")
         const $input = $("<input type='text' name='New Child'>")
@@ -73,8 +100,9 @@ class Gui {
         $form.append($button)
         $button.click((evt) => {
             evt.preventDefault()
-            const inputText = $input.val()
-            this.formSubmit(inputText)
+            // Even in this .click(lambda), `this` is the `Gui class` we're
+            // defining in this file. So formSubmit() is defined above.
+            this.formSubmit($input.val())
         })
         return $form
     }
@@ -85,6 +113,12 @@ class Gui {
         $("body").empty().append($fullNestedTreeList)
     }
 
+    /**
+     * Get jQuery elements describing the tree from a given node, down.
+     * @param  {FSTNode}   node the root of the subtree to be rendered
+     * @return {$("<li>")} a jquery list item with all its descendents rendered
+     * in <ul>'s
+     */
     renderSubtree(node) {
         // render this node as a basic list item
         const nodeName = node.isRoot() ? "ROOT" : node.getName()
@@ -97,18 +131,21 @@ class Gui {
             // give it a form for adding a new child
             baseHtmlNode.append(this.createFormElem())
         } else {
+            // otherwise make sure it doesn't look like the cursor node
             baseHtmlNode.removeClass("cursor")
         }
 
-        // if this node is expanded, also render its children
+        // If this node is expanded, render its children (and recursively, all
+        // its descendants).
         if (node.getData().get("expanded") && node.numChildren() > 0) {
             const $listOfChildren = $("<ul>")
             node.getChildren()
-                .forEach(child => $listOfChildren
-                    .append(this.renderSubtree(child)))
+                .forEach(child =>
+                    $listOfChildren.append(
+                        this.renderSubtree(child)))
             baseHtmlNode.append($listOfChildren)
         }
-        // clicking on a node will move the cursor to it
+        // clicking on any node will move the cursor to it
         const $span = $("<button>").text("[focus]").click(() => {
             console.log("clicked to focus on item")
             this.cursor.moveToId(node.getId())
@@ -124,3 +161,6 @@ const gui = new Gui()
 
 // render it for visualization and interaction
 gui.render()
+
+gui.formSubmit("1st")
+gui.formSubmit("2nd")

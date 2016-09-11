@@ -46,10 +46,20 @@ describe("a cursor", () => {
         addChild("2nd one")
         return assert.equal(basicCursor.getNode().numChildren(), 2)
     })
-    it("should go 'down' into that child", () => {
+    it("should not go 'down' when there is no next node", () => {
         addChild()
         returnsThis(basicCursor.moveDown())
-        return assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+        assert.equal(basicCursor.getNode().isRoot(), true)
+    })
+    it("should go 'down' to the next sibling when there is one", () => {
+        addChild()
+        addChild("2nd")
+        basicCursor.moveRight()
+        // we note this is dependent on moveRight() working
+        assert.equal(basicCursor.getNode().getName(), FIRST_CHILD_NAME)
+        basicCursor.moveDown()
+        // this is what we're really testing
+        return assert.equal(basicCursor.getNode().getName(), "2nd")
     })
     it("should go 'up' back into the root", () => {
         addChild()

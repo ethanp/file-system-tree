@@ -64,22 +64,37 @@ module.exports = class FSTNode {
         return this.isRoot() ? "" : this.parent.innerAbsolutePath() + "/" + this.pathComponent
     }
 
+    /** returns -1 if the child is not found */
     indexOfChild(childId) {
-        return this.getChildren().findIndex(c => c.findById(childId))
+        return this.children.findIndex(c => c.getId() === childId)
     }
 
     previousSiblingOfChild(childId) {
-        const index = this.indexOfChild(childId)
-        // if index is 0, or doesn't exist, we return this (parent) node
-        return index <= 0 ? this : this.getChildren()[index - 1]
+        const i = this.indexOfChild(childId)
+        return i > 0 ? this.getChildAtIndex(i - 1) : this;
     }
 
+    /**
+     * If this is the first sibling, this command will go to the parent directory
+     */
     getPreviousSibling() {
         return this.isRoot() ? this : this.parent.previousSiblingOfChild(this.uid)
     }
 
+    /**
+     * If this is the last sibling, this command will 'pop' to the "next" directory
+     * if there is one, otherwise it will not move.
+     */
     getNextSibling() {
-        return this.isRoot() ? this : this.parent.nextSiblingOfChild(this.uid)
+        if (this.isRoot()) {
+            return this;
+        }
+        const nextSibling = this.parent.nextSiblingOfChild(this.uid)
+        if (nextSibling == undefined) {
+            // no next sibling was found
+            return this
+        }
+        return nextSibling
     }
 
     /**
@@ -154,5 +169,9 @@ module.exports = class FSTNode {
         return this.getChildren().reduce(
             (prev, cur) => prev.concat(cur.getSubtree()), [this]
         )
+    }
+
+    getChildAtIndex(number) {
+        return this.getChildren()[number]
     }
 }

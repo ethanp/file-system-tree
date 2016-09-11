@@ -26,13 +26,18 @@ module.exports = class TreeCursor {
         return this
     }
 
-    /** if this is the first sibling, this command will 'pop' up a directory */
+    /**
+     * If this is the first sibling, this command will go to the parent directory
+     */
     moveUp() {
         this.currentNode = this.currentNode.getPreviousSibling()
         return this
     }
 
-    /** if this is the first sibling, this command will 'pop' to the "next" directory */
+    /**
+     * If this is the last sibling, this command will 'pop' to the "next" directory
+     * if there is one, otherwise it will not move.
+     */
     moveDown() {
         this.currentNode = this.currentNode.getNextSibling()
         return this
